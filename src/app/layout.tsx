@@ -1,5 +1,10 @@
 import React from "react";
-import Sidebar from "../../components/SideBar";
+import Login from "@/components/Login";
+import SessionProvider from "@/components/SessionProvider";
+import Sidebar from "@/components/SideBar";
+
+import { getServerSession } from "next-auth";
+import { authOptions } from "./api/auth/[...nextauth]/route";
 
 import { Inter } from "next/font/google";
 import "./globals.css";
@@ -17,18 +22,27 @@ export const metadata: Metadata = {
 };
 
 interface RootLayoutProps {
-  readonly children: React.ReactNode;
+  children: React.ReactNode;
 }
 
-function RootLayout({ children }: RootLayoutProps): React.JSX.Element {
+async function RootLayout({ children }: RootLayoutProps) {
+  const session = await getServerSession(authOptions);
+
   return (
     <html lang="en">
-      <head />
       <body className={inter.className}>
-        <div className="flex">
-          <Sidebar />
-          <div className="bg-[#343541] flex-1">{children}</div>
-        </div>
+        <SessionProvider session={session}>
+          {session ? (
+            <div className="flex">
+              <div className="bg-[#202123] max-w-xs h-screen overflow-y-auto md:min-w-[16rem]">
+                <Sidebar />
+              </div>
+              <div className="bg-[#343541] flex-1">{children}</div>
+            </div>
+          ) : (
+            <Login />
+          )}
+        </SessionProvider>
       </body>
     </html>
   );

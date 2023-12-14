@@ -1,5 +1,5 @@
 import React from "react";
-import { generateUniqueKey } from "../lib/utils";
+import { generateUniqueKey } from "../helpers/utils";
 
 interface HomeInfoCardProps {
   icon: React.ReactNode;

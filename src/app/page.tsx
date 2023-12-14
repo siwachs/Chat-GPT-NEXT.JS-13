@@ -1,5 +1,5 @@
 import React from "react";
-import HomeInfoCard from "../../components/HomeInfoCard";
+import HomeInfoCard from "@/components/HomeInfoCard";
 
 import {
   SunIcon,
