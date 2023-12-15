@@ -21,9 +21,9 @@ export const metadata: Metadata = {
   description: "Chat GPT Clone",
 };
 
-interface RootLayoutProps {
-  children: React.ReactNode;
-}
+type RootLayoutProps = {
+  readonly children: React.ReactNode;
+};
 
 async function RootLayout({ children }: RootLayoutProps) {
   const session = await getServerSession(authOptions);

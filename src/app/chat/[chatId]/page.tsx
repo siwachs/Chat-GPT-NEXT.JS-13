@@ -2,11 +2,17 @@ import React from "react";
 import Chat from "@/components/subComponents/Chat";
 import ChatInput from "@/components/subComponents/ChatInput";
 
-function ChatPage(): React.JSX.Element {
+type ChatPageProps = {
+  readonly params: {
+    chatId: string;
+  };
+};
+
+function ChatPage({ params: { chatId } }: ChatPageProps): React.JSX.Element {
   return (
     <div className="flex flex-col h-screen overflow-hidden">
-      <Chat />
-      <ChatInput />
+      <Chat chatId={chatId} />
+      <ChatInput chatId={chatId} />
     </div>
   );
 }

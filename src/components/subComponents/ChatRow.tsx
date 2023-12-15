@@ -10,7 +10,7 @@ import { db } from "../../../firebase";
 import { ChatBubbleLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 type ChatRowProps = {
-  id: string;
+  readonly id: string;
 };
 
 function ChatRow({ id }: ChatRowProps): React.JSX.Element {
