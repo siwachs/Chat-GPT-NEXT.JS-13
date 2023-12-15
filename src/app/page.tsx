@@ -1,6 +1,5 @@
 import React from "react";
 import HomeInfoCard from "@/components/HomeInfoCard";
-
 import {
   SunIcon,
   BoltIcon,
@@ -9,7 +8,7 @@ import {
 
 const HomePage = (): React.JSX.Element => {
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen text-white">
+    <div className="flex flex-col items-center justify-start lg:justify-center overflow-y-scroll h-screen text-white">
       <h1 className="text-5xl font-bold mb-20">ChatGPT</h1>
 
       <div className="grid grid-cols-1 gap-y-4 lg:grid-cols-3 lg:gap-x-2 text-center">

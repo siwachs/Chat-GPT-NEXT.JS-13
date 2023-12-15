@@ -34,10 +34,12 @@ async function RootLayout({ children }: RootLayoutProps) {
         <SessionProvider session={session}>
           {session ? (
             <div className="flex">
-              <div className="bg-[#202123] max-w-xs h-screen overflow-y-auto md:min-w-[16rem]">
+              <div className="bg-[#202123] max-w-[16rem] h-screen overflow-y-auto md:min-w-[16rem]">
                 <Sidebar />
               </div>
-              <div className="bg-[#343541] flex-1">{children}</div>
+              <div className="bg-[#343541] flex-1 h-screen overflow-y-auto">
+                {children}
+              </div>
             </div>
           ) : (
             <Login />
