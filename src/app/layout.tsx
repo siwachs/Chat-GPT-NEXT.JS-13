@@ -2,6 +2,7 @@ import React from "react";
 import Login from "@/components/Login";
 import SessionProvider from "@/components/SessionProvider";
 import Sidebar from "@/components/SideBar";
+import ClientProvider from "@/components/ClientProvider";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";
@@ -37,6 +38,7 @@ async function RootLayout({ children }: RootLayoutProps) {
               <div className="bg-[#202123] max-w-[16rem] h-screen overflow-y-auto md:min-w-[16rem]">
                 <Sidebar />
               </div>
+              <ClientProvider />
               <div className="bg-[#343541] flex-1 h-screen overflow-y-auto">
                 {children}
               </div>
