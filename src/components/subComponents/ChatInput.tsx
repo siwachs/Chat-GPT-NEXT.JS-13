@@ -45,7 +45,7 @@ function ChatInput({ chatId }: ChatProps) {
       body: JSON.stringify({
         prompt: input,
         chatId,
-        model: "",
+        model: "davinci",
         session,
       }),
     }).then((res) => {
