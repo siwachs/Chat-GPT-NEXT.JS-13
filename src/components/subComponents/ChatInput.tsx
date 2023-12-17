@@ -8,6 +8,8 @@ import { useSession } from "next-auth/react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../../firebase";
 import { Message } from "../../../typings";
+import ModelSelection from "./ModelSelection";
+import useSWR from "swr";
 
 type ChatProps = {
   readonly chatId: string;
@@ -16,11 +18,15 @@ type ChatProps = {
 function ChatInput({ chatId }: ChatProps) {
   const { data: session } = useSession();
   const [prompt, setPrompt] = useState("");
+  const { data: model, mutate: setModel } = useSWR("model", {
+    fallbackData: "text-davanchi-003",
+  });
 
   const sendMessage = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const input = prompt.trim();
     if (!input) return;
+    setPrompt("");
     const message: Message = {
       text: input,
       user: {
@@ -46,7 +52,7 @@ function ChatInput({ chatId }: ChatProps) {
       body: JSON.stringify({
         prompt: input,
         chatId,
-        model: "davinci",
+        model: model,
         session,
       }),
     }).then((res) => {
@@ -76,7 +82,9 @@ function ChatInput({ chatId }: ChatProps) {
         </button>
       </form>
 
-      <div>{/* Model Selection */}</div>
+      <div className="sm:hidden">
+        <ModelSelection />
+      </div>
     </div>
   );
 }
