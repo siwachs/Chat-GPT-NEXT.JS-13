@@ -1,40 +1,48 @@
+import admin from "firebase-admin";
+import { adminDb } from "../../../../firebaseAdmin";
 import { queryChatGpt } from "@/helpers/queryApi";
-import type { NextApiRequest, NextApiResponse } from "next";
+import { Message } from "../../../../typings";
 
-type Data = {
-  answer: string;
-};
+export async function POST(req: Request, res: Response) {
+  // req.body gives a readable stream
+  const { prompt, chatId, model, session } = await req.json();
 
-export async function POST(req: NextApiRequest, res: NextApiResponse<Data>) {
-  const { prompt, chatId, model, session } = req.body;
-  if (!prompt) {
-    return res.status(404).json({
-      answer: "No Prompt found.",
-    });
-  }
-
-  if (!chatId) {
-    return res.status(404).json({
-      answer: "No ChatId found.",
-    });
-  }
-
-  if (!model) {
-    return res.status(404).json({
-      answer: "No Model found.",
-    });
-  }
-
-  if (!session) {
-    return res.status(404).json({
-      answer: "No session found.",
-    });
-  }
-
-  const response = await queryChatGpt(prompt, chatId, model);
+  const response = await queryChatGpt(prompt, model);
   const message: Message = {
     text: response,
-    user,
-    createdAt:
+    user: {
+      _id: chatId,
+      name: "ChatGPT",
+      avatar: "/avatar-logo.png",
+    },
+    createdAt: admin.firestore.Timestamp.now(),
   };
+
+  try {
+    await adminDb
+      .collection("users")
+      .doc(session?.user?.email)
+      .collection("chats")
+      .doc(chatId)
+      .collection("messages")
+      .add(message);
+  } catch (error) {
+    return Response.json(
+      {
+        answer: error.message,
+      },
+      {
+        status: 500,
+      }
+    );
+  }
+
+  return Response.json(
+    {
+      answer: message.text,
+    },
+    {
+      status: 200,
+    }
+  );
 }

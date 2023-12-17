@@ -1,3 +1,5 @@
+import { ChatCompletionMessage } from "openai/resources/chat/completions";
+
 interface Message {
   text: string;
   user: {

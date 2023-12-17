@@ -7,6 +7,7 @@ import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 import { useSession } from "next-auth/react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../../firebase";
+import { Message } from "../../../typings";
 
 type ChatProps = {
   readonly chatId: string;
