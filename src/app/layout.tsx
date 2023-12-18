@@ -5,7 +5,7 @@ import ClientProvider from "@/components/ClientProvider";
 import Login from "@/components/Login";
 
 import { getServerSession } from "next-auth";
-import { authOptions } from "./api/auth/[...nextauth]/route";
+import { authOptions } from "@/helpers/authOptions";
 
 import { Inter } from "next/font/google";
 import "./globals.css";

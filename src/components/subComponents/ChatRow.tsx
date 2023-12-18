@@ -29,7 +29,7 @@ function ChatRow({ id }: ChatRowProps): React.JSX.Element {
     if (!pathName) return;
 
     setActive(pathName.includes(id));
-  }, [pathName]);
+  }, [pathName, id]);
 
   const removeChat = () => {
     deleteDoc(doc(db, "users", session.user.email, "chats", id))
