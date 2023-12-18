@@ -2,7 +2,7 @@ import React from "react";
 import { Message } from "../../../typings";
 
 type MessageProps = {
-  message: Message;
+  readonly message: Message;
 };
 
 function Message({ message }: MessageProps) {
