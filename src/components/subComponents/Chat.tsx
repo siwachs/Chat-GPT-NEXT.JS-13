@@ -16,18 +16,19 @@ type ChatProps = {
 function Chat({ chatId }: ChatProps) {
   const { data: session } = useSession();
 
-  const [messages, loading, error] = useCollection(
-    query(
-      collection(
-        db,
-        "users",
-        session?.user.email!,
-        "chats",
-        chatId,
-        "messages"
-      ),
-      orderBy("createdAt", "asc")
-    )
+  const [messages] = useCollection(
+    session &&
+      query(
+        collection(
+          db,
+          "users",
+          session.user.email,
+          "chats",
+          chatId,
+          "messages"
+        ),
+        orderBy("createdAt", "asc")
+      )
   );
 
   return (
@@ -41,7 +42,7 @@ function Chat({ chatId }: ChatProps) {
         </>
       )}
 
-      {messages?.docs.map((message) => (
+      {messages?.docs?.map((message) => (
         <Message key={message.id} message={message.data() as MessageType} />
       ))}
     </div>

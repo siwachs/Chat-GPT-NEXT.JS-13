@@ -7,26 +7,30 @@ import { useSession } from "next-auth/react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../../firebase";
 
-const NewChat = () => {
+const NewChat = (): React.JSX.Element => {
   const router = useRouter();
   const { data: session } = useSession();
 
-  const createNewChat = async () => {
-    const doc = await addDoc(
-      collection(db, "users", session.user.email!, "chats"),
-      {
-        userId: session.user.email,
-        createdAt: serverTimestamp(),
-      }
-    );
-
-    router.push(`/chat/${doc.id}`);
+  const createNewChat = () => {
+    addDoc(collection(db, "users", session.user.email, "chats"), {
+      userId: session.user.email,
+      createdAt: serverTimestamp(),
+    })
+      .then((doc) => {
+        router.push(`/chat/${doc.id}`);
+      })
+      .catch((error) => {});
   };
 
   return (
-    <div onClick={createNewChat} className="border-gray-700 border chatRow">
+    <div
+      onKeyDown={(event) => {}}
+      onClick={createNewChat}
+      className="border-gray-700 border chatRow"
+      tabIndex={0}
+    >
       <PlusIcon className="h-4 w-4" />
-      <p>New Chat</p>
+      <p className="select-none">New Chat</p>
     </div>
   );
 };

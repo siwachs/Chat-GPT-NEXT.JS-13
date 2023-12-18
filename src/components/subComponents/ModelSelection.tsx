@@ -6,10 +6,10 @@ import Select from "react-select";
 
 const fetchModels = () => fetch("/api/get-models").then((res) => res.json());
 
-function ModelSelection() {
-  const { data: models, isLoading, error } = useSWR("models", fetchModels);
+function ModelSelection(): React.JSX.Element {
+  const { data: models, isLoading } = useSWR("models", fetchModels);
   const { data: model, mutate: setModel } = useSWR("model", {
-    fallbackData: "text-davanchi-003",
+    fallbackData: "gpt-3.5-turbo",
   });
 
   return (

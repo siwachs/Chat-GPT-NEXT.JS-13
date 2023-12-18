@@ -1,15 +1,16 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import toast from "react-hot-toast";
+import ModelSelection from "./ModelSelection";
 import { PaperAirplaneIcon } from "@heroicons/react/24/solid";
 
+import useSWR from "swr";
 import { useSession } from "next-auth/react";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../../../firebase";
+
 import { Message } from "../../../typings";
-import ModelSelection from "./ModelSelection";
-import useSWR from "swr";
 
 type ChatProps = {
   readonly chatId: string;
@@ -17,33 +18,47 @@ type ChatProps = {
 
 function ChatInput({ chatId }: ChatProps) {
   const { data: session } = useSession();
-  const [prompt, setPrompt] = useState("");
-  const { data: model, mutate: setModel } = useSWR("model", {
-    fallbackData: "text-davanchi-003",
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [prompt, setPrompt] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const { data: model } = useSWR("model", {
+    fallbackData: "gpt-3.5-turbo",
   });
+
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = "auto";
+      textareaRef.current.style.height = `${Math.min(
+        textareaRef.current.scrollHeight,
+        200
+      )}px`;
+    }
+  }, [prompt]);
 
   const sendMessage = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    if (loading) return;
     const input = prompt.trim();
     if (!input) return;
     setPrompt("");
+    setLoading(true);
     const message: Message = {
       text: input,
       user: {
-        _id: session.user.email!,
-        name: session.user.name!,
+        _id: session.user.email,
+        name: session.user.name,
         avatar:
-          session.user.image! ||
+          session.user.image ||
           `https://ui-avatars.com/api/?name=${session.user.name}`,
       },
       createdAt: serverTimestamp(),
     };
+
     await addDoc(
-      collection(db, "users", session.user.email!, "chats", chatId, "messages"),
+      collection(db, "users", session.user.email, "chats", chatId, "messages"),
       message
     );
     const notification = toast.loading("ChatGPT is loading...");
-
     await fetch("/api/ask-question", {
       method: "POST",
       headers: {
@@ -55,26 +70,29 @@ function ChatInput({ chatId }: ChatProps) {
         model: model,
         session,
       }),
-    }).then((res) => {
-      toast.success("Loading Success!", {
-        id: notification,
-      });
-    });
+    })
+      .then((res) => {
+        toast.success("Loading Success!", {
+          id: notification,
+        });
+      })
+      .catch((error) => {})
+      .finally(() => setLoading(false));
   };
 
   return (
     <div className="bg-gray-700/50 text-gray-400 rounded-lg text-sm">
       <form onSubmit={sendMessage} className="p-5 space-x-5 flex">
-        <input
+        <textarea
+          ref={textareaRef}
           className="bg-transparent focus:outline-none flex-1 disabled:cursor-not-allowed disabled:text-gray-300"
-          disabled={!session}
           value={prompt}
           onChange={(event) => setPrompt(event.target.value)}
-          type="text"
           placeholder="Message ChatGPT..."
         />
+
         <button
-          disabled={!prompt || !session}
+          disabled={!prompt.trim()}
           type="submit"
           className="bg-[#11A37F] hover:opacity-50 text-white px-4 py-2 rounded disabled:bg-gray-300 disabled:cursor-not-allowed"
         >

@@ -1,8 +1,8 @@
 import React from "react";
-import Login from "@/components/Login";
 import SessionProvider from "@/components/SessionProvider";
 import Sidebar from "@/components/SideBar";
 import ClientProvider from "@/components/ClientProvider";
+import Login from "@/components/Login";
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "./api/auth/[...nextauth]/route";

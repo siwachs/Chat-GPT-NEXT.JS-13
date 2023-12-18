@@ -5,19 +5,16 @@ type Option = {
   label: string;
 };
 
-type Data = {
-  modelOptions: Option[];
-};
-
 export async function GET(req: Request, res: Response) {
   const models = await openAi.models.list();
+  const modelOptions: Option[] = models.data.map((model: any) => ({
+    label: model.id,
+    value: model.id,
+  }));
 
   return Response.json(
     {
-      modelOptions: models.data.map((model) => ({
-        value: model.id,
-        label: model.id,
-      })),
+      modelOptions,
     },
     {
       status: 200,

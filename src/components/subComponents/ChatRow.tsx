@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { ChatBubbleLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
+
 import { usePathname, useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-
 import { useCollection } from "react-firebase-hooks/firestore";
 import { collection, deleteDoc, doc, orderBy, query } from "firebase/firestore";
 import { db } from "../../../firebase";
-
-import { ChatBubbleLeftIcon, TrashIcon } from "@heroicons/react/24/outline";
 
 type ChatRowProps = {
   readonly id: string;
@@ -18,11 +17,12 @@ function ChatRow({ id }: ChatRowProps): React.JSX.Element {
   const pathName = usePathname();
   const router = useRouter();
   const [active, setActive] = useState(false);
-  const [messages, loading, error] = useCollection(
-    query(
-      collection(db, "users", session?.user?.email!, "chats", id, "messages"),
-      orderBy("createdAt", "asc")
-    )
+  const [messages] = useCollection(
+    session &&
+      query(
+        collection(db, "users", session.user.email, "chats", id, "messages"),
+        orderBy("createdAt", "desc")
+      )
   );
 
   useEffect(() => {
@@ -31,9 +31,12 @@ function ChatRow({ id }: ChatRowProps): React.JSX.Element {
     setActive(pathName.includes(id));
   }, [pathName]);
 
-  const removeChat = async () => {
-    await deleteDoc(doc(db, "users", session?.user.email!, "chats", id));
-    router.replace("/");
+  const removeChat = () => {
+    deleteDoc(doc(db, "users", session.user.email, "chats", id))
+      .then(() => {
+        router.replace("/");
+      })
+      .catch((error) => {});
   };
 
   return (
@@ -43,9 +46,7 @@ function ChatRow({ id }: ChatRowProps): React.JSX.Element {
     >
       <ChatBubbleLeftIcon className="h-5 w-5" />
       <p className="hidden md:inline-flex flex-1 truncate">
-        {messages && messages.docs && messages.docs.length > 0
-          ? messages.docs[messages.docs.length - 1].data().text || "New Chat"
-          : "New Chat"}
+        {messages?.docs?.length > 0 ? messages.docs[0].data().text : "New Chat"}
       </p>
       <TrashIcon
         onClick={removeChat}
